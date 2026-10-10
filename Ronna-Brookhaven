@@ -1,419 +1,176 @@
 -- ====================================================
--- 🌸 Ronna Hub - Full Script (Mobile Supported)
+-- 🌸 Ronna Hub - Stable Mobile Version
 -- ====================================================
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 
 local CORRECT_KEY = "PeuNqbixkbal817"
 local DISCORD_LINK = "https://discord.gg/2vbfWnxYp"
 
--- ----------------------------------------------------
--- 1. สร้าง ScreenGui หลัก
--- ----------------------------------------------------
+-- สร้าง GUI หลัก
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "RonnaHubGui"
+ScreenGui.Name = "RonnaHubMobile"
 ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-local success, _ = pcall(function()
+pcall(function()
     ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end)
-if not success then
+if not ScreenGui.Parent then
     ScreenGui.Parent = game:GetService("CoreGui")
 end
 
 -- ----------------------------------------------------
--- 2. ปุ่มย่อหน้าต่าง (Minimize Circle Button)
--- ----------------------------------------------------
-local MiniButton = Instance.new("TextButton")
-MiniButton.Name = "MiniButton"
-MiniButton.Size = UDim2.new(0, 50, 0, 50)
-MiniButton.Position = UDim2.new(0.05, 0, 0.15, 0)
-MiniButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MiniButton.Text = "R"
-MiniButton.TextColor3 = Color3.fromRGB(255, 105, 180)
-MiniButton.TextSize = 26
-MiniButton.Font = Enum.Font.FredokaOne
-MiniButton.Visible = false
-MiniButton.Active = true
-MiniButton.Draggable = true
-MiniButton.Parent = ScreenGui
-
-local MiniUICorner = Instance.new("UICorner")
-MiniUICorner.CornerRadius = UDim.new(1, 0)
-MiniUICorner.Parent = MiniButton
-
-local MiniUIStroke = Instance.new("UIStroke")
-UIStroke = MiniUIStroke
-MiniUIStroke.Color = Color3.fromRGB(255, 182, 193)
-MiniUIStroke.Thickness = 3
-MiniUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-MiniUIStroke.Parent = MiniButton
-
--- Effect วิบวับสำหรับปุ่มย่อ
-task.spawn(function()
-    while true do
-        TweenService:Create(MiniUIStroke, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Color = Color3.fromRGB(255, 105, 180)}):Play()
-        TweenService:Create(MiniButton, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {TextColor3 = Color3.fromRGB(255, 192, 203)}):Play()
-        task.wait(1)
-        TweenService:Create(MiniUIStroke, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Color = Color3.fromRGB(255, 255, 255)}):Play()
-        TweenService:Create(MiniButton, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {TextColor3 = Color3.fromRGB(255, 105, 180)}):Play()
-        task.wait(1)
-    end
-end)
-
--- ----------------------------------------------------
--- 3. หน้าต่างใส่คีย์ (System Key Window)
+-- 1. หน้าต่างใส่คีย์ (Key System)
 -- ----------------------------------------------------
 local KeyFrame = Instance.new("Frame")
-KeyFrame.Name = "KeyFrame"
-KeyFrame.Size = UDim2.new(0, 340, 0, 220)
-KeyFrame.Position = UDim2.new(0.5, -170, 0.5, -110)
+KeyFrame.Size = UDim2.new(0, 320, 0, 200)
+KeyFrame.Position = UDim2.new(0.5, -160, 0.5, -100)
 KeyFrame.BackgroundColor3 = Color3.fromRGB(255, 240, 245)
 KeyFrame.Active = true
 KeyFrame.Draggable = true
 KeyFrame.Parent = ScreenGui
+Instance.new("UICorner", KeyFrame).CornerRadius = UDim.new(0, 12)
 
-local KeyCorner = Instance.new("UICorner")
-KeyCorner.CornerRadius = UDim.new(0, 15)
-KeyCorner.Parent = KeyFrame
-
-local KeyStroke = Instance.new("UIStroke")
+local KeyStroke = Instance.new("UIStroke", KeyFrame)
 KeyStroke.Color = Color3.fromRGB(255, 255, 255)
-KeyStroke.Thickness = 3
-KeyStroke.Parent = KeyFrame
+KeyStroke.Thickness = 2
 
--- Title Bar (Key)
 local KeyTitle = Instance.new("TextLabel")
-KeyTitle.Size = UDim2.new(1, -60, 0, 35)
+KeyTitle.Size = UDim2.new(1, -20, 0, 30)
 KeyTitle.Position = UDim2.new(0, 10, 0, 5)
 KeyTitle.BackgroundTransparency = 1
 KeyTitle.Text = "🌸 • Ronna Hub - System Key"
 KeyTitle.TextColor3 = Color3.fromRGB(255, 105, 180)
-KeyTitle.TextSize = 16
 KeyTitle.Font = Enum.Font.SourceSansBold
+KeyTitle.TextSize = 15
 KeyTitle.TextXAlignment = Enum.TextXAlignment.Left
 KeyTitle.Parent = KeyFrame
 
--- ปุ่ม ย่อ / ปิด (Key)
-local KeyMinBtn = Instance.new("TextButton")
-KeyMinBtn.Size = UDim2.new(0, 25, 0, 25)
-KeyMinBtn.Position = UDim2.new(1, -55, 0, 8)
-KeyMinBtn.Text = "-"
-KeyMinBtn.TextColor3 = Color3.fromRGB(255, 105, 180)
-KeyMinBtn.BackgroundTransparency = 1
-KeyMinBtn.Font = Enum.Font.SourceSansBold
-KeyMinBtn.TextSize = 20
-KeyMinBtn.Parent = KeyFrame
+-- ปุ่มปิด [X] หน้าคีย์
+local KeyClose = Instance.new("TextButton")
+KeyClose.Size = UDim2.new(0, 25, 0, 25)
+KeyClose.Position = UDim2.new(1, -30, 0, 5)
+KeyClose.BackgroundTransparency = 1
+KeyClose.Text = "X"
+KeyClose.TextColor3 = Color3.fromRGB(255, 105, 180)
+KeyClose.Font = Enum.Font.SourceSansBold
+KeyClose.TextSize = 16
+KeyClose.Parent = KeyFrame
+KeyClose.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
 
-local KeyCloseBtn = Instance.new("TextButton")
-KeyCloseBtn.Size = UDim2.new(0, 25, 0, 25)
-KeyCloseBtn.Position = UDim2.new(1, -30, 0, 8)
-KeyCloseBtn.Text = "X"
-KeyCloseBtn.TextColor3 = Color3.fromRGB(255, 105, 180)
-KeyCloseBtn.BackgroundTransparency = 1
-KeyCloseBtn.Font = Enum.Font.SourceSansBold
-KeyCloseBtn.TextSize = 16
-KeyCloseBtn.Parent = KeyFrame
-
--- Discord Label
-local DiscordLabel = Instance.new("TextLabel")
-DiscordLabel.Size = UDim2.new(1, -20, 0, 20)
-DiscordLabel.Position = UDim2.new(0, 10, 0, 40)
-DiscordLabel.BackgroundTransparency = 1
-DiscordLabel.Text = "🌸 " .. DISCORD_LINK
-DiscordLabel.TextColor3 = Color3.fromRGB(200, 100, 150)
-DiscordLabel.TextSize = 14
-DiscordLabel.Font = Enum.Font.SourceSans
-DiscordLabel.TextXAlignment = Enum.TextXAlignment.Left
-DiscordLabel.Parent = KeyFrame
-
--- TextBox ใส่คีย์
 local KeyBox = Instance.new("TextBox")
 KeyBox.Size = UDim2.new(1, -30, 0, 35)
-KeyBox.Position = UDim2.new(0, 15, 0, 65)
+KeyBox.Position = UDim2.new(0, 15, 0, 50)
 KeyBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 KeyBox.PlaceholderText = "Enter Key.."
 KeyBox.Text = ""
 KeyBox.TextColor3 = Color3.fromRGB(50, 50, 50)
-KeyBox.TextSize = 14
 KeyBox.Font = Enum.Font.SourceSans
+KeyBox.TextSize = 14
 KeyBox.Parent = KeyFrame
+Instance.new("UICorner", KeyBox).CornerRadius = UDim.new(0, 6)
 
-local BoxCorner = Instance.new("UICorner")
-BoxCorner.CornerRadius = UDim.new(0, 8)
-BoxCorner.Parent = KeyBox
-
--- ปุ่ม Copy Discord & Check Key
 local CopyBtn = Instance.new("TextButton")
-CopyBtn.Size = UDim2.new(0.43, 0, 0, 35)
-CopyBtn.Position = UDim2.new(0, 15, 0, 110)
+CopyBtn.Size = UDim2.new(0.45, 0, 0, 35)
+CopyBtn.Position = UDim2.new(0, 15, 0, 95)
 CopyBtn.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
 CopyBtn.Text = "Copy Discord 🔗"
 CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 CopyBtn.Font = Enum.Font.SourceSansBold
-CopyBtn.TextSize = 14
+CopyBtn.TextSize = 13
 CopyBtn.Parent = KeyFrame
-Instance.new("UICorner", CopyBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", CopyBtn).CornerRadius = UDim.new(0, 6)
 
 local CheckBtn = Instance.new("TextButton")
-CheckBtn.Size = UDim2.new(0.43, 0, 0, 35)
-CheckBtn.Position = UDim2.new(0.53, 0, 0, 110)
+CheckBtn.Size = UDim2.new(0.45, 0, 0, 35)
+CheckBtn.Position = UDim2.new(0.52, 0, 0, 95)
 CheckBtn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
 CheckBtn.Text = "Check Key ✅"
 CheckBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 CheckBtn.Font = Enum.Font.SourceSansBold
-CheckBtn.TextSize = 14
+CheckBtn.TextSize = 13
 CheckBtn.Parent = KeyFrame
-Instance.new("UICorner", CheckBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", CheckBtn).CornerRadius = UDim.new(0, 6)
 
--- ข้อความเตือน คีย์ Free
-local InfoLabel = Instance.new("TextLabel")
-InfoLabel.Size = UDim2.new(1, -30, 0, 20)
-InfoLabel.Position = UDim2.new(0, 15, 0, 150)
-InfoLabel.BackgroundTransparency = 1
-InfoLabel.Text = "คีย์ Free ที่ Discord เท่านั้น!"
-InfoLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
-InfoLabel.TextSize = 13
-InfoLabel.Font = Enum.Font.SourceSans
-InfoLabel.Parent = KeyFrame
-
--- ข้อความแจ้งเตือนสถานะคีย์
 local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(1, -30, 0, 20)
-StatusLabel.Position = UDim2.new(0, 15, 0, 180)
+StatusLabel.Size = UDim2.new(1, -30, 0, 30)
+StatusLabel.Position = UDim2.new(0, 15, 0, 145)
 StatusLabel.BackgroundTransparency = 1
-StatusLabel.Text = ""
-StatusLabel.TextSize = 14
+StatusLabel.Text = "คีย์ Free ที่ Discord เท่านั้น!"
+StatusLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
 StatusLabel.Font = Enum.Font.SourceSansBold
+StatusLabel.TextSize = 13
 StatusLabel.Parent = KeyFrame
 
 -- ----------------------------------------------------
--- 4. หน้าต่างฟังก์ชั่นหลัก (Main Function Window)
+-- 2. หน้าต่างฟังก์ชันหลัก (Main Menu)
 -- ----------------------------------------------------
 local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 380, 0, 260)
-MainFrame.Position = UDim2.new(0.5, -190, 0.5, -130)
+MainFrame.Size = UDim2.new(0, 350, 0, 240)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -120)
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 240, 245)
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 15)
 local MainStroke = Instance.new("UIStroke", MainFrame)
 MainStroke.Color = Color3.fromRGB(255, 255, 255)
-MainStroke.Thickness = 3
+MainStroke.Thickness = 2
 
--- Title Bar (Main)
 local MainTitle = Instance.new("TextLabel")
-MainTitle.Size = UDim2.new(1, -60, 0, 35)
+MainTitle.Size = UDim2.new(1, -20, 0, 30)
 MainTitle.Position = UDim2.new(0, 10, 0, 5)
 MainTitle.BackgroundTransparency = 1
-MainTitle.Text = "🌸 • Ronna Hub - System Function"
+MainTitle.Text = "🌸 • Ronna Hub - Function"
 MainTitle.TextColor3 = Color3.fromRGB(255, 105, 180)
-MainTitle.TextSize = 16
 MainTitle.Font = Enum.Font.SourceSansBold
+MainTitle.TextSize = 15
 MainTitle.TextXAlignment = Enum.TextXAlignment.Left
 MainTitle.Parent = MainFrame
 
-local MainMinBtn = Instance.new("TextButton")
-MainMinBtn.Size = UDim2.new(0, 25, 0, 25)
-MainMinBtn.Position = UDim2.new(1, -55, 0, 8)
-MainMinBtn.Text = "-"
-MainMinBtn.TextColor3 = Color3.fromRGB(255, 105, 180)
-MainMinBtn.BackgroundTransparency = 1
-MainMinBtn.Font = Enum.Font.SourceSansBold
-MainMinBtn.TextSize = 20
-MainMinBtn.Parent = MainFrame
+-- ปุ่มปิด [X] หน้าหลัก
+local MainClose = Instance.new("TextButton")
+MainClose.Size = UDim2.new(0, 25, 0, 25)
+MainClose.Position = UDim2.new(1, -30, 0, 5)
+MainClose.BackgroundTransparency = 1
+MainClose.Text = "X"
+MainClose.TextColor3 = Color3.fromRGB(255, 105, 180)
+MainClose.Font = Enum.Font.SourceSansBold
+MainClose.TextSize = 16
+MainClose.Parent = MainFrame
+MainClose.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
 
-local MainCloseBtn = Instance.new("TextButton")
-MainCloseBtn.Size = UDim2.new(0, 25, 0, 25)
-MainCloseBtn.Position = UDim2.new(1, -30, 0, 8)
-MainCloseBtn.Text = "X"
-MainCloseBtn.TextColor3 = Color3.fromRGB(255, 105, 180)
-MainCloseBtn.BackgroundTransparency = 1
-MainCloseBtn.Font = Enum.Font.SourceSansBold
-MainCloseBtn.TextSize = 16
-MainCloseBtn.Parent = MainFrame
+-- พื้นที่ใส่ปุ่มฟังก์ชันแบบเลื่อนได้
+local Scroll = Instance.new("ScrollingFrame")
+Scroll.Size = UDim2.new(1, -20, 1, -45)
+Scroll.Position = UDim2.new(0, 10, 0, 40)
+Scroll.BackgroundTransparency = 1
+Scroll.ScrollBarThickness = 4
+Scroll.Parent = MainFrame
 
--- Tab Buttons (เมนูสลับหน้า)
-local TabBar = Instance.new("Frame")
-TabBar.Size = UDim2.new(0, 100, 1, -45)
-TabBar.Position = UDim2.new(0, 10, 0, 40)
-TabBar.BackgroundColor3 = Color3.fromRGB(255, 228, 235)
-TabBar.Parent = MainFrame
-Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0, 10)
+local UIList = Instance.new("UIListLayout", Scroll)
+UIList.SortOrder = Enum.SortOrder.LayoutOrder
+UIList.Padding = UDim.new(0, 6)
 
-local TabMain = Instance.new("TextButton")
-TabMain.Size = UDim2.new(1, -10, 0, 30)
-TabMain.Position = UDim2.new(0, 5, 0, 10)
-TabMain.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-TabMain.Text = "🏡 หน้าหลัก"
-TabMain.TextColor3 = Color3.fromRGB(255, 255, 255)
-TabMain.Font = Enum.Font.SourceSansBold
-TabMain.TextSize = 13
-TabMain.Parent = TabBar
-Instance.new("UICorner", TabMain).CornerRadius = UDim.new(0, 6)
-
-local TabSystem = Instance.new("TextButton")
-TabSystem.Size = UDim2.new(1, -10, 0, 30)
-TabSystem.Position = UDim2.new(0, 5, 0, 45)
-TabSystem.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
-TabSystem.Text = "🐾 ระบบ"
-TabSystem.TextColor3 = Color3.fromRGB(255, 255, 255)
-TabSystem.Font = Enum.Font.SourceSansBold
-TabSystem.TextSize = 13
-TabSystem.Parent = TabBar
-Instance.new("UICorner", TabSystem).CornerRadius = UDim.new(0, 6)
-
-local TabRadar = Instance.new("TextButton")
-TabRadar.Size = UDim2.new(1, -10, 0, 30)
-TabRadar.Position = UDim2.new(0, 5, 0, 80)
-TabRadar.BackgroundColor3 = Color3.fromRGB(255, 182, 193)
-TabRadar.Text = "🌸 เรด้า"
-TabRadar.TextColor3 = Color3.fromRGB(255, 255, 255)
-TabRadar.Font = Enum.Font.SourceSansBold
-TabRadar.TextSize = 13
-TabRadar.Parent = TabBar
-Instance.new("UICorner", TabRadar).CornerRadius = UDim.new(0, 6)
-
--- Content Pages Container
-local PageContainer = Instance.new("Frame")
-PageContainer.Size = UDim2.new(1, -130, 1, -45)
-PageContainer.Position = UDim2.new(0, 120, 0, 40)
-PageContainer.BackgroundTransparency = 1
-PageContainer.Parent = MainFrame
-
-local PageMain = Instance.new("ScrollingFrame", PageContainer)
-PageMain.Size = UDim2.new(1, 0, 1, 0)
-PageMain.BackgroundTransparency = 1
-PageMain.ScrollBarThickness = 4
-PageMain.Visible = true
-
-local PageSystem = Instance.new("ScrollingFrame", PageContainer)
-PageSystem.Size = UDim2.new(1, 0, 1, 0)
-PageSystem.BackgroundTransparency = 1
-PageSystem.ScrollBarThickness = 4
-PageSystem.Visible = false
-
-local PageRadar = Instance.new("ScrollingFrame", PageContainer)
-PageRadar.Size = UDim2.new(1, 0, 1, 0)
-PageRadar.BackgroundTransparency = 1
-PageRadar.ScrollBarThickness = 4
-PageRadar.Visible = false
-
-local UIList1 = Instance.new("UIListLayout", PageMain)
-UIList1.SortOrder = Enum.SortOrder.LayoutOrder
-UIList1.Padding = UDim.new(0, 8)
-
-local UIList2 = Instance.new("UIListLayout", PageSystem)
-UIList2.SortOrder = Enum.SortOrder.LayoutOrder
-UIList2.Padding = UDim.new(0, 8)
-
-local UIList3 = Instance.new("UIListLayout", PageRadar)
-UIList3.SortOrder = Enum.SortOrder.LayoutOrder
-UIList3.Padding = UDim.new(0, 8)
-
--- ----------------------------------------------------
--- 5. Helper Functions สำหรับสร้าง ปุ่ม / ฟิลด์ปรับ
--- ----------------------------------------------------
-local function createToggle(parent, text, callback)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -10, 0, 35)
-    frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    frame.Parent = parent
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.65, 0, 1, 0)
-    label.Position = UDim2.new(0, 8, 0, 0)
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(80, 80, 80)
-    label.Font = Enum.Font.SourceSansBold
-    label.TextSize = 13
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = frame
-    
+-- ฟังก์ชันสร้างปุ่มเปิด/ปิด
+local function addToggle(name, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.3, 0, 0.7, 0)
-    btn.Position = UDim2.new(0.68, 0, 0.15, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(220, 50, 50) -- สีแดง (ปิด)
-    btn.Text = "ปิด"
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Size = UDim2.new(1, 0, 0, 35)
+    btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Text = "  " .. name .. " [ ปิด ]"
+    btn.TextColor3 = Color3.fromRGB(80, 80, 80)
     btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 12
-    btn.Parent = frame
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-    
-    local state = false
-    btn.MouseButton1Click:Connect(function()
-        state = not state
-        if state then
-            btn.BackgroundColor3 = Color3.fromRGB(50, 200, 50) -- สีเขียว (เปิด)
-            btn.Text = "เปิด"
-        else
-            btn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-            btn.Text = "ปิด"
-        end
-        callback(state, function(newState)
-            state = newState
-            if state then
-                btn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-                btn.Text = "เปิด"
-            else
-                btn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-                btn.Text = "ปิด"
-            end
-        end)
-    end)
-    return frame
-end
-
-local function createInputToggle(parent, text, defaultVal, callback)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -10, 0, 40)
-    frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    frame.Parent = parent
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.45, 0, 1, 0)
-    label.Position = UDim2.new(0, 8, 0, 0)
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(80, 80, 80)
-    label.Font = Enum.Font.SourceSansBold
-    label.TextSize = 12
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = frame
-    
-    local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0.22, 0, 0.65, 0)
-    box.Position = UDim2.new(0.46, 0, 0.17, 0)
-    box.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-    box.Text = tostring(defaultVal)
-    box.TextColor3 = Color3.fromRGB(50, 50, 50)
-    box.Font = Enum.Font.SourceSans
-    box.TextSize = 12
-    box.Parent = frame
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
-    
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.26, 0, 0.65, 0)
-    btn.Position = UDim2.new(0.71, 0, 0.17, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-    btn.Text = "ปิด"
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 12
-    btn.Parent = frame
+    btn.TextSize = 13
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.Parent = Scroll
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
     
     local state = false
@@ -421,60 +178,29 @@ local function createInputToggle(parent, text, defaultVal, callback)
         state = not state
         if state then
             btn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-            btn.Text = "เปิด"
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.Text = "  " .. name .. " [ เปิด ]"
         else
-            btn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-            btn.Text = "ปิด"
+            btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            btn.TextColor3 = Color3.fromRGB(80, 80, 80)
+            btn.Text = "  " .. name .. " [ ปิด ]"
         end
-        callback(state, tonumber(box.Text) or defaultVal)
-    end)
-    
-    -- พิมพ์ส่งแล้ว รีเซ็ตและปิดอัตโนมัติ
-    box.FocusLost:Connect(function(enterPressed)
-        if enterPressed then
-            state = false
-            btn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
-            btn.Text = "ปิด"
-            callback(false, tonumber(box.Text) or defaultVal)
-        end
+        callback(state)
     end)
 end
 
-local function createClickButton(parent, text, callback)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -10, 0, 35)
-    frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    frame.Parent = parent
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
-    
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -10, 0.8, 0)
-    btn.Position = UDim2.new(0, 5, 0.1, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
-    btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 13
-    btn.Parent = frame
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-    
-    btn.MouseButton1Click:Connect(callback)
-end
-
 -- ----------------------------------------------------
--- 6. ระบบตรรกะฟังก์ชั่นการทำงาน (Logic)
+-- 3. ระบบการทำงานจริง (Functions)
 -- ----------------------------------------------------
 
--- [หน้าหลัก]
 -- 1. วิ่งเร็ว
-local walkSpeedConn
-createInputToggle(PageMain, "วิ่งเร็ว [1-500]", 16, function(enabled, value)
-    if walkSpeedConn then walkSpeedConn:Disconnect() end
-    local val = math.clamp(value or 16, 1, 500)
+local speedConn
+addToggle("วิ่งเร็ว (Speed 100)", function(enabled)
+    if speedConn then speedConn:Disconnect() end
     if enabled then
-        walkSpeedConn = RunService.Stepped:Connect(function()
+        speedConn = RunService.Stepped:Connect(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                LocalPlayer.Character.Humanoid.WalkSpeed = val
+                LocalPlayer.Character.Humanoid.WalkSpeed = 100
             end
         end)
     else
@@ -485,15 +211,14 @@ createInputToggle(PageMain, "วิ่งเร็ว [1-500]", 16, function(ena
 end)
 
 -- 2. กระโดดสูง
-local jumpPowerConn
-createInputToggle(PageMain, "กระโดดสูง [1-100]", 50, function(enabled, value)
-    if jumpPowerConn then jumpPowerConn:Disconnect() end
-    local val = math.clamp(value or 50, 1, 100)
+local jumpConn
+addToggle("กระโดดสูง (Jump 120)", function(enabled)
+    if jumpConn then jumpConn:Disconnect() end
     if enabled then
-        jumpPowerConn = RunService.Stepped:Connect(function()
+        jumpConn = RunService.Stepped:Connect(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
                 LocalPlayer.Character.Humanoid.UseJumpPower = true
-                LocalPlayer.Character.Humanoid.JumpPower = val
+                LocalPlayer.Character.Humanoid.JumpPower = 120
             end
         end)
     else
@@ -503,29 +228,15 @@ createInputToggle(PageMain, "กระโดดสูง [1-100]", 50, function(
     end
 end)
 
--- 3. กระโดดไม่จำกัด
-local infJumpConn
-createToggle(PageMain, "กระโดดไม่จำกัด", function(enabled)
-    if infJumpConn then infJumpConn:Disconnect() end
-    if enabled then
-        infJumpConn = UserInputService.JumpRequest:Connect(function()
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-            end
-        end)
-    end
-end)
-
--- [ระบบ]
--- 1. ชื่อสายรุ้ง (Brookhaven Rainbow Name Only)
+-- 3. ชื่อสายรุ้งบนหัว
 local rainbowConn
-createToggle(PageSystem, "ชื่อสายรุ้ง", function(enabled)
+addToggle("ชื่อสายรุ้ง (Rainbow Name)", function(enabled)
     if rainbowConn then rainbowConn:Disconnect() end
     if enabled then
         rainbowConn = RunService.RenderStepped:Connect(function()
-            local character = LocalPlayer.Character
-            if character then
-                local head = character:FindFirstChild("Head")
+            local char = LocalPlayer.Character
+            if char then
+                local head = char:FindFirstChild("Head")
                 if head then
                     for _, v in ipairs(head:GetChildren()) do
                         if v:IsA("BillboardGui") then
@@ -543,7 +254,78 @@ createToggle(PageSystem, "ชื่อสายรุ้ง", function(enabled)
     end
 end)
 
--- 2. ทะลุกำแพง (Noclip ไม่ทะลุพื้น)
+-- 4. ทะลุกำแพง (Noclip)
 local noclipConn
-createToggle(PageSystem, "ทะลุกำแพง", function(enabled)
-    if noclipConn then noc
+addToggle("ทะลุกำแพง (Noclip)", function(enabled)
+    if noclipConn then noclipConn:Disconnect() end
+    if enabled then
+        noclipConn = RunService.Stepped:Connect(function()
+            if LocalPlayer.Character then
+                for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        if LocalPlayer.Character then
+            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end)
+
+-- 5. ESP ผู้เล่น (ตัวใสสีฟ้า + ชื่อใหญ่)
+local espConn
+local espHighlights = {}
+addToggle("ESP ผู้เล่น (มองทะลุ)", function(enabled)
+    if enabled then
+        espConn = RunService.RenderStepped:Connect(function()
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr ~= LocalPlayer and plr.Character and not espHighlights[plr] then
+                    local hl = Instance.new("Highlight")
+                    hl.FillColor = Color3.fromRGB(135, 206, 250)
+                    hl.FillTransparency = 0.5
+                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    hl.Parent = plr.Character
+                    espHighlights[plr] = hl
+                end
+            end
+        end)
+    else
+        if espConn then espConn:Disconnect() end
+        for _, hl in pairs(espHighlights) do
+            if hl then hl:Destroy() end
+        end
+        espHighlights = {}
+    end
+end)
+
+-- ----------------------------------------------------
+-- 4. ควบคุมปุ่มกดระบบคีย์
+-- ----------------------------------------------------
+CopyBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(DISCORD_LINK)
+        StatusLabel.Text = "คัดลอกลิงก์ Discord แล้ว!"
+    else
+        StatusLabel.Text = "ตัวรันไม่รองรับ setclipboard"
+    end
+end)
+
+CheckBtn.MouseButton1Click:Connect(function()
+    if KeyBox.Text == CORRECT_KEY then
+        StatusLabel.TextColor3 = Color3.fromRGB(50, 200, 50)
+        StatusLabel.Text = "รหัสถูกต้อง! กำลังเปิดเมนู..."
+        task.wait(0.8)
+        KeyFrame.Visible = false
+        MainFrame.Visible = true
+    else
+        StatusLabel.TextColor3 = Color3.fromRGB(220, 50, 50)
+        StatusLabel.Text = "รหัสผิด! โปรดตรวจสอบใหม่"
+    end
+end)
